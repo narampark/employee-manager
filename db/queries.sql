@@ -1,0 +1,5 @@
+-- SELECT department.department_name AS department, reviews.review
+-- FROM
+-- LEFT JOIN department
+-- ON reviews.department_id = department.IDENTIFIED
+-- ORDER BY departments.department_name;
