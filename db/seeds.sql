@@ -4,7 +4,7 @@ VALUES
 ("Human Resource"),
 ("Payroll"),
 ("Sales"),
-("Customer Relations"),
+("Customer Relations");
 
 INSERT INTO roles (title, salary, department_id)
 VALUES
