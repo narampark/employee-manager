@@ -31,7 +31,6 @@ function start() {
         "Add a manager",
         "Add an employee",
         "Update an employee's role",
-        "Update employee manager",
         "View employees by manager",
         "View employees by department",
         "Delete Departments | Roles | Employees",
@@ -62,11 +61,8 @@ function start() {
         case "Add an employee":
           addEmployee();
           break;
-        case "Update an employee role":
+        case "Update an employee's role":
           updateEmployeeRole();
-          break;
-        case "Update employee manager":
-          updateEmployeeManager();
           break;
         case "View employees by manager":
           viewEmployeesByManager();
@@ -254,7 +250,7 @@ function addEmployee() {
       return;
     }
 
-    const roles = results.map(({ id, title }) => ({
+    const roles = res.map(({ id, title }) => ({
       name: title,
       value: id,
     }));
@@ -266,7 +262,7 @@ function addEmployee() {
           console.error(err);
           return;
         }
-        const managers = results.map(({ id, name }) => ({
+        const managers = res.map(({ id, name }) => ({
           name,
           value: id,
         }));
@@ -305,7 +301,7 @@ function addEmployee() {
               answers.roleId,
               answers.managerId,
             ];
-            connect.query(sql, values, (err) => {
+            connection.query(sql, values, (err) => {
               if (err) {
                 console.error(err);
                 return;
@@ -324,6 +320,7 @@ function addEmployee() {
 }
 
 function updateEmployeeRole() {
+  console.log("updating");
   const queryEmployees =
     "SELECT employee.id, employee.first_name, employee.last_name, roles.title FROM employee LEFT JOIN roles ON employee.role_id = roles.id";
   const queryRoles = "SELECT * FROM roles";
@@ -412,6 +409,45 @@ function viewEmployeesByManager() {
 
     start();
   });
+}
+
+function viewEmployeesByDepartment() {
+  const query =
+    "SELECT departments.department_name, employee.first_name, employee.last_name FROM employee INNER JOIN roles ON employee.role_id = roles.id INNER JOIN departments ON roles.department_id = departments.id ORDER BY departments.department_name ASC";
+
+  connection.query(query, (err, res) => {
+    if (err) throw err;
+    console.log("\nEmployees by department");
+    console.table(res);
+    start();
+  });
+}
+
+function deleteDepartmentsRolesEmployees() {
+  inquirer
+    .prompt({
+      type: "list",
+      name: "data",
+      message: "What would you like to remove",
+      choices: ["Employee", "Role", "Department"],
+    })
+    .then((answer) => {
+      switch (answer.data) {
+        case "Employee":
+          deleteEmployee();
+          break;
+        case "Role":
+          deleteRole();
+          break;
+        case "Department":
+          deleteDepartment();
+          break;
+        default:
+          console.log("Invalid");
+          start();
+          break;
+      }
+    });
 }
 
 function deleteEmployee() {
@@ -537,7 +573,7 @@ function viewTotalUtilizedBudgetOfDepartment() {
         connection.query(query, [answer.departmentId], (err, res) => {
           if (err) throw err;
           const totalSalary = res[0].total_salary;
-          console.log(`Total salary`);
+          console.log(`Total salary is $${totalSalary}`);
 
           start();
         });
